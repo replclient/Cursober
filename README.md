@@ -6,6 +6,8 @@ Sober runs the Android Roblox client and does not expose a supported way to draw
 
 <p align="center"><img src="assets/cursober.svg" width="180" alt="Cursober icon"></p>
 
+<p align="center"><img src="assets/cursober-ui.png" width="740" alt="Cursober showing the detected KDE theme and Sober cursor mappings"></p>
+
 ## What it does
 
 On KDE, Cursober reads the cursor theme selected in `~/.config/kcminputrc`, finds that theme in the normal icon directories, and applies these mappings when they exist:
