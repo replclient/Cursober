@@ -14,8 +14,8 @@ On KDE, Cursober reads the cursor theme selected in `~/.config/kcminputrc`, find
 
 | Roblox overlay | Theme cursor | Purpose |
 | --- | --- | --- |
-| `ArrowCursor.png` | `left_ptr` | Normal cursor |
-| `ArrowFarCursor.png` | `hand2` | Interactive / button hover cursor |
+| `ArrowFarCursor.png` | `left_ptr` | Normal cursor |
+| `ArrowCursor.png` | `hand2` | Interactive / button hover cursor |
 
 It saves PNGs only to Sober's documented overlay path:
 

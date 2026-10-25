@@ -32,8 +32,8 @@ SOBER_ID = "org.vinegarhq.Sober"
 IMAGE_TYPE = 0xFFFD0002
 TEXTURE_SIZE = 64
 TARGETS = {
-    "ArrowCursor.png": ("Normal", ("left_ptr", "default", "arrow", "X_cursor")),
-    "ArrowFarCursor.png": ("Interactive", ("hand2", "link", "pointer", "hand1")),
+    "ArrowFarCursor.png": ("Normal", ("left_ptr", "default", "arrow", "X_cursor")),
+    "ArrowCursor.png": ("Interactive", ("hand2", "link", "pointer", "hand1")),
 }
 
 
