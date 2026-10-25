@@ -34,8 +34,13 @@ Before each apply, Cursober records the existing overlay files in:
 
 Use **Restore latest backup** to reverse the most recent apply operation, then restart Sober.
 
-## Reverting back to default
-Currently, you can only revert it back to normal by manually removing the overlay files in `~/.var/app/org.vinegarhq.Sober/data/sober/asset_overlay/`.
+## Reverting to the default cursor
+
+To restore Sober's default cursors, manually remove the cursor override files from:
+
+`~/.var/app/org.vinegarhq.Sober/data/sober/asset_overlay/`
+
+Restart Sober afterward to ensure the changes take effect.
 
 
 ## Install and use
