@@ -34,19 +34,22 @@ Before each apply, Cursober records the existing overlay files in:
 
 Use **Restore latest backup** to reverse the most recent apply operation, then restart Sober.
 
+## Reverting back to default
+Currently, you can only revert it back to normal by manually removing the overlay files in `~/.var/app/org.vinegarhq.Sober/data/sober/asset_overlay/`.
+
+
 ## Install and use
 
 1. Download `Cursober-x86_64.AppImage` from the latest release.
-2. In Dolphin: right-click it → **Properties** → **Permissions** → enable **Is executable**.
-3. Open it, confirm the detected theme and cursor mapping, then choose **Apply to Sober**.
-4. Restart Sober.
+2. Open it, confirm the detected theme and cursor mapping, then choose **Apply to Sober**.
+3. Restart Sober.
 
 The AppImage does not change the system cursor theme. It only writes the two files above and makes a backup first.
 
 ## Requirements
 
-* Linux on x86_64.
-* [Sober](https://sober.vinegarhq.org/) installed as Flatpak and launched at least once.
+* Mostly any Linux distro on x86_64.
+* [Sober](https://sober.vinegarhq.org/) installed and launched at least once.
 * A KDE/Xcursor theme installed under `~/.local/share/icons`, `~/.icons`, `/usr/local/share/icons`, or `/usr/share/icons`.
 
 ## Limitations
