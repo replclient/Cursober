@@ -1,0 +1,9 @@
+# Generated application bundles and build intermediates
+build/
+*.AppImage
+assets/cursober-*.png
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/

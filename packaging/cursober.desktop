@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Cursober
+Comment=Apply the active Linux cursor theme to Sober
+Exec=Cursober
+Icon=cursober
+Categories=Settings;
+Terminal=false
+StartupNotify=true
