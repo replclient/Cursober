@@ -53,7 +53,7 @@ The AppImage does not change the system cursor theme. It only writes the two fil
 
 * Sober/Roblox currently supplies only the two verified cursor texture slots listed above. Text, loading, resize, and animated cursor states cannot be overlaid safely yet.
 * Roblox stores the cursor artwork in a fixed 64×64 canvas. Cursober preserves the Xcursor hotspot by aligning it to the canvas center and keeps the original frame size whenever it fits.
-* Some Roblox experiences replace their own cursor assets. Those may not use Sober's base cursor textures.
+* Some Roblox expe- I meant games replace their own cursor assets. Those may not use Sober's base cursor textures.
 
 ## Build from source
 
