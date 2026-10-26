@@ -12,7 +12,7 @@ for SIZE in 16 32 48 64 128 256 512; do
 done
 
 python3 -m PyInstaller --noconfirm --clean --windowed --onedir --name veyro \
-  --add-data "$PROJECT/assets:assets" \
+  --add-data "$PROJECT/assets/veyro.svg:assets" \
   --distpath "$BUILD/dist" --workpath "$BUILD/pyinstaller-work" --specpath "$BUILD" \
   "$PROJECT/src/veyro.py"
 
