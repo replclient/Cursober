@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Cursober
+Name=veyro
 Comment=Apply the active Linux cursor theme to Sober
-Exec=Cursober
-Icon=cursober
+Exec=veyro
+Icon=veyro
 Categories=Settings;
 Terminal=false
 StartupNotify=true

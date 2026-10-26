@@ -1,7 +1,7 @@
 # Generated application bundles and build intermediates
 build/
 *.AppImage
-assets/cursober-*.png
+assets/veyro-*.png
 
 # Python
 __pycache__/
