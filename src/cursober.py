@@ -16,6 +16,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QColor, QIcon, QImage, QPainter
 from PySide6.QtWidgets import (
     QApplication,
+    QButtonGroup,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -23,6 +24,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -242,75 +244,273 @@ class MainWindow(QMainWindow):
         self.service = CursorService()
         self.setWindowTitle(APP_NAME)
         self.setWindowIcon(application_icon())
-        self.setMinimumWidth(620)
+        self.setMinimumSize(860, 590)
+        self.resize(960, 640)
 
         root = QWidget()
-        layout = QVBoxLayout(root)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
+        root.setObjectName("root")
+        shell = QHBoxLayout(root)
+        shell.setContentsMargins(0, 0, 0, 0)
+        shell.setSpacing(0)
 
-        title = QLabel("Cursober")
-        title.setObjectName("title")
-        subtitle = QLabel("Use your active Linux cursor theme for Sober's supported Roblox cursor overlay.")
-        subtitle.setWordWrap(True)
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
+        sidebar = QFrame()
+        sidebar.setObjectName("sidebar")
+        sidebar.setFixedWidth(218)
+        sidebar_layout = QVBoxLayout(sidebar)
+        sidebar_layout.setContentsMargins(18, 22, 18, 18)
+        sidebar_layout.setSpacing(8)
+        brand = QLabel("Cursober")
+        brand.setObjectName("brand")
+        subtitle = QLabel("Sober cursor tools")
+        subtitle.setObjectName("brandSubtitle")
+        sidebar_layout.addWidget(brand)
+        sidebar_layout.addWidget(subtitle)
+        sidebar_layout.addSpacing(28)
+        nav_label = QLabel("WORKSPACE")
+        nav_label.setObjectName("navLabel")
+        sidebar_layout.addWidget(nav_label)
+        self.navigation = QButtonGroup(self)
+        self.navigation.setExclusive(True)
+        self.pages = QStackedWidget()
+        for index, label in enumerate(("Overview", "Cursor overlay", "About")):
+            button = QPushButton(label)
+            button.setObjectName("navButton")
+            button.setCheckable(True)
+            button.setCursor(Qt.CursorShape.PointingHandCursor)
+            button.clicked.connect(lambda _checked=False, page=index: self.pages.setCurrentIndex(page))
+            self.navigation.addButton(button)
+            sidebar_layout.addWidget(button)
+            if index == 0:
+                button.setChecked(True)
+        sidebar_layout.addStretch()
+        sidebar_note = QLabel("Your desktop cursor stays untouched.")
+        sidebar_note.setObjectName("sidebarNote")
+        sidebar_note.setWordWrap(True)
+        sidebar_layout.addWidget(sidebar_note)
+        shell.addWidget(sidebar)
 
-        card = QFrame()
-        card.setFrameShape(QFrame.Shape.StyledPanel)
-        grid = QGridLayout(card)
-        grid.setContentsMargins(16, 16, 16, 16)
-        grid.setHorizontalSpacing(18)
-        self.theme_value = QLabel()
-        self.mapping_value = QLabel()
-        self.overlay_value = QLabel(str(self.service.overlay))
-        self.overlay_value.setWordWrap(True)
-        for row, (label, value) in enumerate((("Active theme", self.theme_value), ("Cursor mapping", self.mapping_value), ("Sober overlay", self.overlay_value))):
-            heading = QLabel(label)
-            heading.setObjectName("heading")
-            grid.addWidget(heading, row, 0, Qt.AlignmentFlag.AlignTop)
-            grid.addWidget(value, row, 1)
-        layout.addWidget(card)
-
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(34, 30, 34, 22)
+        content_layout.setSpacing(16)
+        self.pages.addWidget(self._overview_page())
+        self.pages.addWidget(self._overlay_page())
+        self.pages.addWidget(self._about_page())
+        content_layout.addWidget(self.pages, 1)
         self.status = QLabel()
+        self.status.setObjectName("status")
         self.status.setWordWrap(True)
-        layout.addWidget(self.status)
+        content_layout.addWidget(self.status)
+        shell.addWidget(content, 1)
+        self.setCentralWidget(root)
+        self._apply_style()
+        self.refresh_button.clicked.connect(self.refresh)
+        self.apply_button.clicked.connect(self.apply)
+        self.quick_apply_button.clicked.connect(self.apply)
+        self.restore_button.clicked.connect(self.restore)
+        self.refresh()
 
+    @staticmethod
+    def _page_header(title: str, description: str) -> QWidget:
+        header = QWidget()
+        layout = QVBoxLayout(header)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+        title_label = QLabel(title)
+        title_label.setObjectName("pageTitle")
+        description_label = QLabel(description)
+        description_label.setObjectName("pageDescription")
+        description_label.setWordWrap(True)
+        layout.addWidget(title_label)
+        layout.addWidget(description_label)
+        return header
+
+    @staticmethod
+    def _card(title: str, detail: str = "") -> tuple[QFrame, QVBoxLayout]:
+        card = QFrame()
+        card.setObjectName("card")
+        layout = QVBoxLayout(card)
+        layout.setContentsMargins(18, 16, 18, 16)
+        layout.setSpacing(6)
+        heading = QLabel(title)
+        heading.setObjectName("cardTitle")
+        layout.addWidget(heading)
+        if detail:
+            description = QLabel(detail)
+            description.setObjectName("cardDetail")
+            description.setWordWrap(True)
+            layout.addWidget(description)
+        return card, layout
+
+    def _overview_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(16)
+        hero = QFrame()
+        hero.setObjectName("hero")
+        hero_layout = QVBoxLayout(hero)
+        hero_layout.setContentsMargins(26, 24, 26, 24)
+        hero_layout.setSpacing(8)
+        eyebrow = QLabel("ROBLOX CURSOR OVERLAY")
+        eyebrow.setObjectName("eyebrow")
+        hero_title = QLabel("Bring your Linux cursor\ninto Roblox.")
+        hero_title.setObjectName("heroTitle")
+        hero_body = QLabel("Cursober converts the right Xcursor artwork and installs it through Sober's supported asset overlay.")
+        hero_body.setObjectName("heroBody")
+        hero_body.setWordWrap(True)
+        self.quick_apply_button = QPushButton("Apply cursor overlay")
+        self.quick_apply_button.setObjectName("primaryButton")
+        self.quick_apply_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        hero_layout.addWidget(eyebrow)
+        hero_layout.addWidget(hero_title)
+        hero_layout.addWidget(hero_body)
+        hero_layout.addSpacing(6)
+        hero_layout.addWidget(self.quick_apply_button, 0, Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(hero)
+        layout.addWidget(self._page_header("At a glance", "Cursober reads your current KDE cursor setting whenever you refresh."))
+        cards = QHBoxLayout()
+        cards.setSpacing(12)
+        theme_card, theme_layout = self._card("ACTIVE THEME")
+        self.theme_value = QLabel()
+        self.theme_value.setObjectName("cardValue")
+        self.theme_value.setWordWrap(True)
+        theme_layout.addWidget(self.theme_value)
+        sober_card, sober_layout = self._card("SOBER")
+        self.sober_value = QLabel()
+        self.sober_value.setObjectName("cardValue")
+        sober_layout.addWidget(self.sober_value)
+        mapping_card, mapping_layout = self._card("CURSOR STATES")
+        self.mapping_value = QLabel()
+        self.mapping_value.setObjectName("cardValue")
+        self.mapping_value.setWordWrap(True)
+        mapping_layout.addWidget(self.mapping_value)
+        for card in (theme_card, sober_card, mapping_card):
+            cards.addWidget(card, 1)
+        layout.addLayout(cards)
+        layout.addStretch()
+        return page
+
+    def _overlay_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(16)
+        layout.addWidget(self._page_header("Cursor overlay", "Review the two Roblox textures Cursober can replace safely."))
+        mappings = QHBoxLayout()
+        mappings.setSpacing(12)
+        normal_card, normal_layout = self._card("NORMAL CURSOR", "Used away from buttons and interactive UI.")
+        self.normal_mapping = QLabel()
+        self.normal_mapping.setObjectName("mappingValue")
+        self.normal_mapping.setWordWrap(True)
+        normal_layout.addWidget(self.normal_mapping)
+        interactive_card, interactive_layout = self._card("INTERACTIVE CURSOR", "Used over supported buttons and links.")
+        self.interactive_mapping = QLabel()
+        self.interactive_mapping.setObjectName("mappingValue")
+        self.interactive_mapping.setWordWrap(True)
+        interactive_layout.addWidget(self.interactive_mapping)
+        mappings.addWidget(normal_card, 1)
+        mappings.addWidget(interactive_card, 1)
+        layout.addLayout(mappings)
+        overlay_card, overlay_layout = self._card("SOBER OVERLAY LOCATION")
+        self.overlay_value = QLabel(str(self.service.overlay))
+        self.overlay_value.setObjectName("pathValue")
+        self.overlay_value.setWordWrap(True)
+        overlay_layout.addWidget(self.overlay_value)
+        layout.addWidget(overlay_card)
+        safety = QLabel("Applying creates a timestamped backup first. Cursober writes only its two overlay textures and never changes your KDE cursor theme.")
+        safety.setObjectName("safetyNote")
+        safety.setWordWrap(True)
+        layout.addWidget(safety)
+        layout.addStretch()
         actions = QHBoxLayout()
-        self.refresh_button = QPushButton("Refresh")
-        self.apply_button = QPushButton("Apply to Sober")
-        self.apply_button.setDefault(True)
+        self.refresh_button = QPushButton("Refresh detection")
         self.restore_button = QPushButton("Restore latest backup")
+        self.apply_button = QPushButton("Apply to Sober")
+        self.apply_button.setObjectName("primaryButton")
+        for button in (self.refresh_button, self.restore_button, self.apply_button):
+            button.setCursor(Qt.CursorShape.PointingHandCursor)
         actions.addWidget(self.refresh_button)
         actions.addStretch()
         actions.addWidget(self.restore_button)
         actions.addWidget(self.apply_button)
         layout.addLayout(actions)
+        return page
 
-        note = QLabel("Cursober never changes your desktop theme. Applying creates a timestamped backup; restart Sober for changes to take effect.")
-        note.setWordWrap(True)
-        note.setObjectName("note")
-        layout.addWidget(note)
-        self.setCentralWidget(root)
-        self.setStyleSheet("#title { font-size: 28px; font-weight: 700; } #heading { font-weight: 600; } #note { color: palette(mid); }")
-        self.refresh_button.clicked.connect(self.refresh)
-        self.apply_button.clicked.connect(self.apply)
-        self.restore_button.clicked.connect(self.restore)
-        self.refresh()
+    def _about_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(16)
+        layout.addWidget(self._page_header("About Cursober", "A small, reversible bridge between KDE cursor themes and Sober."))
+        safety_card, safety_layout = self._card("DESIGNED TO STAY OUT OF THE WAY")
+        safety_detail = QLabel("• Reads the active cursor theme from KDE\n• Converts original Xcursor frames to transparent PNG textures\n• Backs up existing Sober overlay files before changing them\n• Does not patch Roblox, Sober, or desktop cursor settings")
+        safety_detail.setObjectName("aboutDetail")
+        safety_detail.setWordWrap(True)
+        safety_layout.addWidget(safety_detail)
+        layout.addWidget(safety_card)
+        future_card, future_layout = self._card("WHAT'S NEXT", "Cursober is growing into a wider Sober companion.")
+        future_detail = QLabel("The new navigation is ready for future Sober tweaks and organized FastFlag profiles, while the cursor overlay stays focused and safe today.")
+        future_detail.setObjectName("cardDetail")
+        future_detail.setWordWrap(True)
+        future_layout.addWidget(future_detail)
+        layout.addWidget(future_card)
+        layout.addStretch()
+        return page
+
+    def _apply_style(self) -> None:
+        self.setStyleSheet("""
+            #root { background: #11121b; color: #f3f0ff; }
+            #sidebar { background: #181923; border-right: 1px solid #2b2d3b; }
+            #brand { color: #ffffff; font-size: 25px; font-weight: 750; }
+            #brandSubtitle, #sidebarNote, #pageDescription, #cardDetail, #safetyNote, #status { color: #aba9be; }
+            #brandSubtitle { font-size: 12px; }
+            #navLabel, #eyebrow, #cardTitle { color: #918ca8; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+            #navButton { background: transparent; border: 0; border-radius: 9px; color: #bcb9ca; padding: 10px 12px; text-align: left; font-weight: 600; }
+            #navButton:hover { background: #262735; color: #ffffff; }
+            #navButton:checked { background: #6d4bc1; color: #ffffff; }
+            #sidebarNote { background: #21222e; border-radius: 9px; font-size: 12px; padding: 10px; }
+            #pageTitle { color: #ffffff; font-size: 28px; font-weight: 750; }
+            #pageDescription { font-size: 14px; }
+            #hero { background: #29213e; border: 1px solid #4d3b78; border-radius: 16px; }
+            #heroTitle { color: #ffffff; font-size: 30px; font-weight: 750; }
+            #heroBody { color: #d1c9e8; font-size: 14px; }
+            #card { background: #1c1d28; border: 1px solid #2d2e3d; border-radius: 12px; }
+            #cardValue { color: #ffffff; font-size: 16px; font-weight: 650; }
+            #mappingValue { color: #e4ddfa; font-family: monospace; font-size: 13px; }
+            #pathValue { color: #c8c4d8; font-family: monospace; font-size: 12px; }
+            #aboutDetail { color: #d3cfdf; line-height: 1.65; }
+            #primaryButton { background: #8b5cf6; border: 0; border-radius: 9px; color: #ffffff; font-weight: 700; padding: 10px 16px; }
+            #primaryButton:hover { background: #9d75f8; }
+            #primaryButton:disabled { background: #4a435d; color: #aaa4b7; }
+            QPushButton { background: #262735; border: 1px solid #343544; border-radius: 9px; color: #f2effb; padding: 9px 13px; font-weight: 600; }
+            QPushButton:hover { background: #303142; }
+            #status { background: #1b1c27; border-radius: 8px; font-size: 12px; padding: 10px 12px; }
+        """)
 
     def refresh(self) -> None:
         try:
             theme, selected = self.service.inspect()
-            mapping = ", ".join(f"{TARGETS[target][0]} → {source}" for target, (source, _path, _frame) in selected.items())
-            self.theme_value.setText(f"{theme.name} ({theme.requested_size}px)")
-            self.mapping_value.setText(mapping)
-            self.status.setText("Ready. The 64×64 Roblox textures preserve the source hotspot at their center.")
-            self.apply_button.setEnabled(self.service.sober_data.is_dir())
+            normal = selected["ArrowFarCursor.png"][0]
+            interactive = selected["ArrowCursor.png"][0]
+            self.theme_value.setText(f"{theme.name}\n{theme.requested_size}px")
+            self.sober_value.setText("Detected" if self.service.sober_data.is_dir() else "Launch Sober once")
+            self.mapping_value.setText(f"Normal: {normal}\nInteractive: {interactive}")
+            self.normal_mapping.setText(f"{normal}  →  ArrowFarCursor.png")
+            self.interactive_mapping.setText(f"{interactive}  →  ArrowCursor.png")
+            self.status.setText("Ready. Roblox uses fixed 64×64 textures; Cursober keeps the source cursor hotspot centered in that canvas.")
+            enabled = self.service.sober_data.is_dir()
+            self.apply_button.setEnabled(enabled)
+            self.quick_apply_button.setEnabled(enabled)
         except CursoberError as error:
             self.theme_value.setText("Unavailable")
+            self.sober_value.setText("Not ready")
             self.mapping_value.setText("Unavailable")
+            self.normal_mapping.setText("Unavailable")
+            self.interactive_mapping.setText("Unavailable")
             self.status.setText(str(error))
             self.apply_button.setEnabled(False)
+            self.quick_apply_button.setEnabled(False)
 
     def apply(self) -> None:
         try:
